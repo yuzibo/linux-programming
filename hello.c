@@ -21,7 +21,9 @@ module_init(hello_init);
  * exit of modules
  */
 module_exit(hello_exit);
-
+============================
+	Makefile
+============================
 
 ifneq ($(KERNELRELEASE),)
 	obj-m := hello.o
