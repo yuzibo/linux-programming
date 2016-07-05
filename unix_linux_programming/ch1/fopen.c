@@ -1,7 +1,17 @@
 /*
-Files in the standard library are described by file pointers rather than file descriptors. A file pointer is a pointer to a structure that contains several pieces of information about the file: a pointer to a buffer, so the file can be read in large chunks; a count of the number of characters left in the buffer; a pointer to the next character position in the buffer; the file descriptor; and flags describing read/write mode, error status, etc.
+Files in the standard library are described by file pointers rather than file descriptors.
+A file pointer is a pointer to a structure that contains several pieces of information about the file:
+a pointer to a buffer, so the file can be read in large chunks; a count of the number of characters left
+in the buffer; a pointer to the next character position in the buffer; the file descriptor; and flags describing
+read/write mode, error status, etc.
 
-The data structure that describes a file is contained in <stdio.h>, which must be included (by #include) in any source file that uses routines from the standard input/output library. It is also included by functions in that library. In the following excerpt from a typical <stdio.h>, names that are intended for use only by functions of the library begin with an underscore so they are less likely to collide with names in a user's program. This convention is used by all standard library routines.
+
+
+The data structure that describes a file is contained in <stdio.h>, which must be included (by #include)
+in any source file that uses routines from the standard input/output library.
+It is also included by functions in that library. In the following excerpt from a typical <stdio.h>,
+names that are intended for use only by functions of the library begin with an underscore so they are less
+likely to collide with names in a user's program. This convention is used by all standard library routines.
 */
    #define NULL      0
    #define EOF       (-1)
@@ -44,11 +54,20 @@ The data structure that describes a file is contained in <stdio.h>, which must b
    #define getchar()   getc(stdin)
    #define putcher(x)  putc((x), stdout)
 
-   /*The getc macro normally decrements the count, advances the pointer, and returns the character. (Recall that a long #define is continued with a backslash.) If the count goes negative, however, getc calls the function _fillbuf to replenish the buffer, re-initialize the structure contents, and return a character. The characters are returned unsigned, which ensures that all characters will be positive.
-Although we will not discuss any details, we have included the definition of putc to show that it operates in much the same way as getc, calling a function _flushbuf when its buffer is full. We have also included macros for accessing the error and end-of-file status and the file descriptor.
-
-The function fopen can now be written. Most of fopen is concerned with getting the file opened and positioned at the right place, and setting the flag bits to indicate the proper state. fopen does not allocate any buffer space; this is done by _fillbuf when the file is first read.
-*/
+   /*
+    * The getc macro normally decrements the count, advances the pointer, and returns the character.
+    * (Recall that a long #define is continued with a backslash.) If the count goes negative, however,
+    * getc calls the function _fillbuf to replenish the buffer, re-initialize the structure contents,
+    * and return a character. The characters are returned unsigned, which ensures that all characters will be positive.
+    *
+    * Although we will not discuss any details, we have included the definition of putc to show that
+    * it operates in much the same way as getc, calling a function _flushbuf when its buffer is full.
+    * We have also included macros for accessing the error and end-of-file status and the file descriptor.
+    *
+    * The function fopen can now be written. Most of fopen is concerned with getting the file opened and
+    * positioned at the right place, and setting the flag bits to indicate the proper state. fopen does not
+    * allocate any buffer space; this is done by _fillbuf when the file is first read.
+    */
    #include <fcntl.h>
    #include "syscalls.h"
    #define PERMS 0666    /* RW for owner, group, others */
@@ -83,11 +102,18 @@ The function fopen can now be written. Most of fopen is concerned with getting t
        return fp;
    }
 /*
-This version of fopen does not handle all of the access mode possibilities of the standard, though adding them would not take much code. In particular, our fopen does not recognize the ``b'' that signals binary access, since that is meaningless on UNIX systems, nor the ``+'' that permits both reading and writing.
-The first call to getc for a particular file finds a count of zero, which forces a call of _fillbuf. If _fillbuf finds that the file is not open for reading, it returns EOF immediately. Otherwise, it tries to allocate a buffer (if reading is to be buffered).
-
-Once the buffer is established, _fillbuf calls read to fill it, sets the count and pointers, and returns the character at the beginning of the buffer. Subsequent calls to _fillbuf will find a buffer allocated.
-*/
+ * This version of fopen does not handle all of the access mode possibilities of the standard,
+ * though adding them would not take much code. In particular, our fopen does not recognize the ``b'' that
+ * signals binary access, since that is meaningless on UNIX systems, nor the ``+'' that permits both
+ * reading and writing.
+ *
+ *  The first call to getc for a particular file finds a count of zero, which forces a call of _fillbuf.
+ *  If _fillbuf finds that the file is not open for reading, it returns EOF immediately. Otherwise,
+ *  it tries to allocate a buffer (if reading is to be buffered).
+ *
+ * Once the buffer is established, _fillbuf calls read to fill it, sets the count and pointers, and
+ * returns the character at the beginning of the buffer. Subsequent calls to _fillbuf will find a buffer allocated.
+ */
    #include "syscalls.h"
 
    /* _fillbuf:  allocate and fill input buffer */
@@ -114,15 +140,15 @@ Once the buffer is established, _fillbuf calls read to fill it, sets the count a
        return (unsigned char) *fp->ptr++;
    }
 /*
- * The only remaining loose end is how everything gets started. The array _iob must be defined and initialized for stdin, stdout and stderr:
- * */
+ * The only remaining loose end is how everything gets started. The array _iob must be defined
+ * and initialized for stdin, stdout and stderr:
+ */
    FILE _iob[OPEN_MAX] = {    /* stdin, stdout, stderr */
        { 0, (char *) 0, (char *) 0, _READ, 0 },
        { 0, (char *) 0, (char *) 0, _WRITE, 1 },
        { 0, (char *) 0, (char *) 0, _WRITE, | _UNBUF, 2 }
    };
 /*
- *
-The initialization of the flag part of the structure shows that stdin is to be read, stdout is to be written, and stderr is to be written unbuffered.
-*
-*/
+ * The initialization of the flag part of the structure shows that stdin is to be read,
+ * stdout is to be written, and stderr is to be written unbuffered.
+ */
