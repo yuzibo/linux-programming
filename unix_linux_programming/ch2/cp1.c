@@ -22,9 +22,10 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "usage: %s source destinations\n",*argv);
 		exit(1);
 	}
-
+	/* 首先打开源文件 */
 	if((in_fd = open(argv[1],O_RDONLY)) == -1)
 		oops("Cannot open ", argv[1]);
+
 	if((out_fd = creat(argv[2],COPYMODE)) == -1)
 		oops("Cannot creat",argv[2]);
 
