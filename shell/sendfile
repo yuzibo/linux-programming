@@ -1,0 +1,23 @@
+#!/bin/sh
+#sendfiletohx 本地路径 IP 用户名 密码 远程路径 文件名称
+if [ $# -ne 6 ]
+then
+	echo "请输入本地路径 IP 用户名 密码 远程路径 文件名称"
+	exit 1
+fi
+cd
+cd $1
+# 这儿的"<<EOF"有何作用
+# 请看这篇文章
+# http://yuzibo.github.io/LinuxShellCommand.html
+# ctrl + f "<< EOF"
+ftp -i -n $2 <<EOF
+user $3 $4
+cd $5
+bin
+put $6
+bye
+EOF
+
+exit 0
+
