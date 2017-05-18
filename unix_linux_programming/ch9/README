@@ -1,0 +1,7 @@
+=============
+gcc -g execute.c splitline.c smsh1.c -o smsh
+
+to generate object file called smah, which can call shell command
+
+exec1.c to display execvp();
+psh1.c is promption shell
