@@ -1,0 +1,33 @@
+=====
+
+# 1
+.这是最简单的网络编程的例子,测试方法:
+将这两个文件(service.c和client.c)放在同一目录下,分别编译通过,然后,
+运行程序,
+	./service.o
+打开另一个终端,
+	./client.o localhost
+注意,将这两个目标文件的权限设置为 700,最后,你会发现这两个程序已经通话了
+
+# 2
+srvsingle.c 和 tcpclient.c是流式套接字编程的实例,有很多问题没有解决,比如,撤销服务器进程后,原本的端口无法使用...
+
+同样,编译完成后先在终端下:
+
+	./srvsingle portnumber
+
+然后,在另一个终端运行
+
+	./tcpclient server-ip portnumber
+
+最后键入
+
+	%D %T
+
+它就会给你返回服务器的日期,时间等等.
+
+还有就是,在使用中,我使用 `gcc -c xx.c -o xx`,执行二进制文件时,系统给我报错 `can't excute binary file `
+然后我使用 `gcc -c xx.c `就解决问题了
+
+
+

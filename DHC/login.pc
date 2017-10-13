@@ -1,0 +1,102 @@
+/****
+这是链接 oracle 的proc的pc文件
+*/
+
+
+#include<stdio.h>
+
+#include<stdlib.h>
+
+#include<string.h>
+#include <stdarg.h>
+
+EXEC SQL include sqlca;
+int main()
+{
+EXEC    SQL     BEGIN   DECLARE SECTION;
+        char    sql_username[16];
+        char    sql_passwd[16];
+EXEC    SQL     END             DECLARE SECTION;
+
+        strncpy(sql_username,"glsdb_hnnz",sizeof(sql_username)-1);
+        strncpy(sql_passwd,"glsdb_hnnz",sizeof(sql_passwd)-1);
+        EXEC SQL CONNECT :sql_username identified by :sql_passwd;
+        if(sqlca.sqlcode)
+        {
+                printf("sqlca.sqlcode=[%d]",sqlca.sqlcode);
+                printf("connect unsuccess!\n");
+        }
+        else
+        {
+                printf("connect success!\n");
+        }
+}
+
+/**
+  这是相关的Makefile
+  */
+#*****************************************************************************#
+#* 文件名称:Makefile                                                          *#
+#* 操作系统: AIX V5.3                                                         *#
+#* 编译器  : vac 6(runtime library 9.0.0.2)                                   *#
+#******************************************************************************#
+
+#----公共变量
+SHELL           =/bin/sh
+RM      =       rm -f
+#----中间件变量
+RSM             =-r Db2_XA
+
+#----应用路径
+BINDIR          =$(HOME)/bin
+LIBDIR          =$(HOME)/lib
+
+CC              =       cc  -g $(Q64)
+PROC=proc
+BIN     = $(HOME)/bin
+
+#----编译参数
+
+CFLAGS          =-DDEBUG -DBAL_DEBUG
+APPINCLUDE      =-I$(HOME)/src/incl_c -L$(HOME)/lib -I$(HOME)/src/incl_sqc -I$(HOME)/src/incl_pub -I$(TUXDIR)/include -Iincl -I$(ORACLE_HOME)/precomp/public -L$(ORACLE_HOME)/lib
+
+APPLIBSDIR      =-L$(HOME) -L$(TUXDIR)/lib -L$(ORACLE_HOME)/lib
+COMMLIBS        =-lclntsh
+APPLIBS         =-lsocket -lm -lc  $(COMMLIBS)
+LIBAPL  = -lbase -lpubdb -lpubdb_m -lc -lm -lacct -leod -lenvinfo -lcurses
+LIBS    =       $(LIBAPL)
+PROCINCLUDE= include=$(HOME)/src/incl_c include=$(HOME)/src/incl_pub include=../include
+#LIBAPL  =  -leod
+
+OBJS1 = login.o
+
+TARGET  = login
+
+all: $(TARGET) clean
+
+$(TARGET): $(OBJS1)
+        $(CC) -brtl  $(Q64) $(APPLIBDIR) $(CFLAGS) $(APPINCLUDE) -o  $@   $(OBJS1)  $(LIBS) -lclntsh
+        @echo "$@ is OK!"
+
+
+#----隐含规则
+.SUFFIXES: .o .c .pc
+
+.pc.o:
+        $(PROC) DYNAMIC=ANSI $(PROCINCLUDE) dbms=v7 unsafe_null=yes lines=yes iname=$*.pc
+        $(CC) -O -g -s $(CFLAGS) $(APPINCLUDE) -c $*.c
+        @rm -f $*.c
+        @rm -f $*.lis
+
+.c.o:
+        $(CC) -o $@ $(CFLAGS) $(APPINCLUDE) -O -g -s -c $*.c
+
+.c:
+        $(CC) -o $@ $(CFLAGS) $(APPINCLUDE) $*.c $(LIBS)
+
+
+clean:
+        $(RM) *.o
+        $(RM) *.c
+        $(RM) *.lis
+
