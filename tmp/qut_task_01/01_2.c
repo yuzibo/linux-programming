@@ -8,8 +8,13 @@
 
 #define max 100
 
+/* 保存物体的重量 */
 int weight[max];
+
+/* 保存物体的价值*/
 int value[max];
+
+/* 物品数量， 当前最大的重量， 当前最大价值 */
 int n, max_weight, max_value;
 
 int best_answer[max], answer[max];
@@ -51,6 +56,7 @@ void knapsack_back(int level, int current_weight, int current_value)
 	}
 }
 
+/* 将所有的路径填充为0 */
 void init()
 {
 	int i;
@@ -59,17 +65,22 @@ void init()
 		answer[i] = 0;
 	}
 }
-int main()
+void input()
 {
 	int i,j;
-	while(scanf("%d%d", &n, &max_weight) != EOF){
+	scanf("%d%d", &n, &max_weight) ;
 		for(i = 1; i<=n; i++)
 			scanf("%d", &weight[i]);
 		for (j = 1; j <= n; j++)
 			scanf("%d", &value[j]);
-		init();
-		knapsack_back(0, max_weight, 0);
-		print();
-	}
+		
+}
+int main()
+{
+	input();	
+	init();
+	knapsack_back(0, max_weight, 0);
+	print();
+	
 	return 0;
 }
