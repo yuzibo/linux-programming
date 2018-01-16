@@ -8,3 +8,17 @@ K4是K5的左孩子
 K3是K4的左孩子
 d2是K3的左孩子
 d3是K3的右孩子
+
+root@yubo-2:~/git/linux-programming/tmp/qut_task_bst# g++ -g bst.cpp -o test
+root@yubo-2:~/git/linux-programming/tmp/qut_task_bst# ./test
+最优期望搜索代价：2.75
+K2为根
+K1是K2的左孩子
+d0是K1的左孩子
+d1是K1的右孩子
+K5是K2的右孩子
+K4是K5的左孩子
+K3是K4的左孩子
+d2是K3的左孩子
+d3是K3的右孩子
+root@yubo-2:~/git/linux-programming/tmp/qut_task_bst#
